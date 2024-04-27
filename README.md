@@ -1,1 +1,1 @@
-# django-celery-beat
+# django-celery-beat-flower
