@@ -4,54 +4,64 @@ services:
 
   redis:
     image: redis:alpine
+    container_name: redis
     networks:
       - live
 
   web:
     build: ./project
+    container_name: web
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
     environment:
-      DEBUG: "True"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-    links:
-      - redis
     depends_on:
       - redis
     networks:
       - live
       
-  celery:
+  celery-worker:
     build: ./project
+    container_name: celery-worker
     command: celery -A myceleryproject worker -l info
     environment:
-      DEBUG: "True"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-    links:
-      - redis
     depends_on:
       - redis
+      - web
     networks:
       - live
 
   celery-beat:
     build: ./project
+    container_name: celery-beat
     command: celery -A myceleryproject beat -l info
     environment:
-      DEBUG: "True"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-    links:
-      - celery
-      - redis
     depends_on:
-      - celery
       - redis
+      - celery-worker
     networks:
       - live
+
+  flower:
+    image: mher/flower
+    container_name: flower
+    environment:
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      FLOWER_PORT: "8888"
+    ports:
+      - 8888:8888
+    depends_on:
+      - redis
+      - celery-worker
+      - celery-beat
+    networks:
+    - live
 
 networks:
   live:
