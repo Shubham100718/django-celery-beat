@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   web:
@@ -27,6 +27,7 @@ services:
     #   - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
     depends_on:
       - redis
+      - web
   celery-beat:
     build: ./project
     command: celery -A myceleryproject beat -l info
@@ -38,3 +39,5 @@ services:
     #   - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
     depends_on:
       - redis
+      - web
+      - celery

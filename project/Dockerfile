@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.5-alpine
+FROM python:3.11.4-alpine
 
 # set work directory
 WORKDIR /usr/src/app
@@ -18,6 +18,9 @@ COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 
 # copy project
 COPY . /usr/src/app/
+
+# Make entrypoint executable
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

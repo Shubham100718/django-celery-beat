@@ -18,8 +18,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
         'every-30-minutes':{
         'task':'myapp.tasks.check_server_status',
-        'schedule':crontab(minute='*/30'),
-        'args':('11111', )
+        'schedule':crontab(minute='*/1')
     }
 }
 
